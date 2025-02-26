@@ -1,0 +1,16 @@
+[project]
+name = "education"
+version = "0.1.0"
+description = "ITK python practice tasks"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ruff>=0.9.7",
+]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
