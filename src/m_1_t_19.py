@@ -12,7 +12,7 @@ def lru_cache(*args, **kwargs):
             function_name = str(func).split(" ")[
                 1
             ]  # func.__name__ doesn't work because of unittest.mock
-            key = function_name + str(f_args) + str(f_kwargs)
+            key = function_name + str(f_args) + str(sorted(f_kwargs))
             if key in CACHE:
                 CACHE.move_to_end(key)
                 return CACHE[key]
