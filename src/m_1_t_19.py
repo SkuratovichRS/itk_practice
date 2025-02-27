@@ -2,10 +2,10 @@ import unittest.mock
 from collections import OrderedDict
 from functools import wraps
 
-CACHE = OrderedDict()
-
 
 def lru_cache(*args, **kwargs):
+    CACHE = OrderedDict()
+
     def decorator(func):
         @wraps(func)
         def wrapper(*f_args, **f_kwargs):
