@@ -1,0 +1,25 @@
+
+    {
+        "function":"use_sequential",
+        "time_seconds":8.485512,
+        "performance_vs_sequential":1.0
+    }
+
+    {
+        "function":"use_concurrent_futures",
+        "time_seconds":10.477682,
+        "performance_vs_sequential":0.8098653882
+    }
+
+    {
+        "function":"use_multiprocessing_pool",
+        "time_seconds":3.36302,
+        "performance_vs_sequential":2.5231821399
+    }
+
+    {
+        "function":"use_multiprocessing_process",
+        "time_seconds":7.008769,
+        "performance_vs_sequential":1.2106993396
+    }
+
