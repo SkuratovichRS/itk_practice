@@ -12,8 +12,8 @@ def binary_search(arr: list[int | float], numb: int | float) -> bool:
 
 
 arr = [1, 2, 3, 45, 356, 569, 600, 705, 923]
-
-assert binary_search(arr, 356)
-assert binary_search(arr, 1)
-assert binary_search(arr, 923)
-assert not binary_search(arr, 42)
+if __name__ == "__main__":
+    assert binary_search(arr, 356)
+    assert binary_search(arr, 1)
+    assert binary_search(arr, 923)
+    assert not binary_search(arr, 42)

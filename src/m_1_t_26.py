@@ -19,5 +19,6 @@ class B(metaclass=TimestampMeta):
     pass
 
 
-assert type(A.created_at) is type(B.created_at) is datetime
-assert A.created_at != B.created_at
+if __name__ == "__main__":
+    assert type(A.created_at) is type(B.created_at) is datetime
+    assert A.created_at != B.created_at

@@ -25,8 +25,10 @@ same_b_obj = B()
 c_obj = C()
 same_c_obj = C()
 
-assert singletons.instance is test_module.instance
-assert len(singletons.MetaSingleton._instances) == 2
-assert a_obj is same_a_obj
-assert b_obj is same_b_obj
-assert c_obj is same_c_obj
+
+if __name__ == "__main__":
+    assert singletons.instance is test_module.instance
+    assert len(singletons.MetaSingleton._instances) == 2
+    assert a_obj is same_a_obj
+    assert b_obj is same_b_obj
+    assert c_obj is same_c_obj

@@ -1,0 +1,6 @@
+{"url": "https://example.com", "status": 200}
+{"url": "https://httpbin.org/status/404", "status": 404}
+{"url": "https://nonexistent.url", "status": 0}
+{"url": "https://httpbin.org/delay/2", "status": 0}
+{"url": "https://habr.com", "status": 200}
+{"url": "https://reddit.com", "status": 200}
