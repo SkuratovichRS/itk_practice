@@ -7,9 +7,9 @@ from random import randint
 import pandas as pd
 
 
-def measure_time(func):
+def measure_time(func: callable) -> callable:
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> float:
         start = datetime.now()
         func(*args, **kwargs)
         end = datetime.now()
@@ -46,7 +46,7 @@ def use_multiprocessing_pool(data: list[int]) -> None:
         pool.map(process_number, data)
 
 
-def task(task_data: list[int], queue: mp.Queue) -> None:
+def worker(task_data: list[int], queue: mp.Queue) -> None:
     queue.put([process_number(i) for i in task_data])
     queue.put(None)
 
@@ -62,7 +62,7 @@ def use_multiprocessing_process(data: list[int]) -> None:
     for i in range(max_processes):
         start = i * chunk_size
         end = start + chunk_size if i < max_processes - 1 else len(data)
-        process = mp.Process(target=task, args=(data[start:end], queue))
+        process = mp.Process(target=worker, args=(data[start:end], queue))
         process.start()
         processes.append(process)
 
@@ -81,7 +81,7 @@ def use_multiprocessing_process(data: list[int]) -> None:
         process.join()
 
 
-def get_results(functions: list[callable]) -> None:
+def get_results(functions: list[callable]) -> dict[str, float]:
     data = generate_data(100000)
     results = {func.__name__: func(data) for func in functions}
     return results
