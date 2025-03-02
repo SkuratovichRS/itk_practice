@@ -17,23 +17,15 @@ async def fetch_urls(
     urls: list[str], file_path: str, concurrency: int = 5, timeout: int = 1
 ):
     semaphore = asyncio.Semaphore(concurrency)
-    active_requests = 0  # to track restriction for simultaneous requests
 
     async def fetch(url: str) -> dict[str, str | int]:
         async with semaphore:
-            nonlocal active_requests
-            active_requests += 1
-            print(f"started {url}, active requests: {active_requests} / {concurrency}")
             async with aiohttp.ClientSession() as session:
                 try:
                     response = await session.get(url, timeout=timeout)
                     status = response.status
                 except (asyncio.TimeoutError, aiohttp.ClientConnectorError):
                     status = 0
-                active_requests -= 1
-                print(
-                    f"finished {url}, active requests: {active_requests} / {concurrency}"
-                )
                 return {"url": url, "status": status}
 
     coros = [fetch(url) for url in urls]

@@ -16,6 +16,7 @@ async def fetch(
     output_path: str,
     semaphore: asyncio.Semaphore,
     session: aiohttp.ClientSession,
+    lock: asyncio.Lock,
     timeout: int = 1,
 ) -> None:
     async with semaphore:
@@ -36,7 +37,8 @@ async def fetch(
             print(f"Error parsing JSON from {url}")
             return
 
-        data = {"url": url, "content": response_json}
+    data = {"url": url, "content": response_json}
+    async with lock:
         await write(output_path, data)
 
 
@@ -44,13 +46,14 @@ async def fetch_urls(
     input_path: str, output_path: str, concurrency: int = 5, timeout: int = 1
 ) -> None:
     semaphore = asyncio.Semaphore(concurrency)
+    lock = asyncio.Lock()
     tasks = []
     async with aiohttp.ClientSession() as session:
         async with aiofiles.open(input_path, "r") as f:
             async for line in f:
                 url = line.strip()
                 task = asyncio.create_task(
-                    fetch(url, output_path, semaphore, session, timeout)
+                    fetch(url, output_path, semaphore, session, lock, timeout)
                 )
                 tasks.append(task)
             await asyncio.gather(*tasks)
