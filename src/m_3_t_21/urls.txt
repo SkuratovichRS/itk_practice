@@ -1,0 +1,16 @@
+https://jsonplaceholder.typicode.com/posts
+https://jsonplaceholder.typicode.com/users
+https://httpbin.org/delay/2
+https://api.coindesk.com/v1/bpi/currentprice.json
+https://dog.ceo/api/breeds/list/all
+https://reddit.com
+https://api.spacexdata.com/v4/launches
+https://nonexistent.url
+https://openweathermap.org/api
+https://api.github.com/users/octocat
+https://habr.com
+https://jsonplaceholder.typicode.com/todos
+https://example.com
+https://httpbin.org/status/404
+https://randomuser.me/api/
+https://api.exchangerate-api.com/v4/latest/USD

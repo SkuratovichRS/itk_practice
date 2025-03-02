@@ -36,8 +36,8 @@ async def fetch_urls(
                 )
                 return {"url": url, "status": status}
 
-    tasks = [fetch(url) for url in urls]
-    results = await asyncio.gather(*tasks)
+    coros = [fetch(url) for url in urls]
+    results = await asyncio.gather(*coros)
 
     with open(file_path, "w") as f:
         for result in results:
