@@ -11,9 +11,9 @@ def measure_time(func: callable) -> callable:
     @wraps(func)
     def wrapper(*args, **kwargs) -> float:
         start = datetime.now()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         end = datetime.now()
-        return (end - start).total_seconds()
+        return result, (end - start).total_seconds()
 
     return wrapper
 
@@ -46,36 +46,42 @@ def use_multiprocessing_pool(data: list[int]) -> None:
         pool.map(process_number, data)
 
 
-def worker(task_data: list[int], queue: mp.Queue) -> None:
-    queue.put([process_number(i) for i in task_data])
-    queue.put(None)
+@measure_time
+def worker(request_queue: mp.Queue, response_queue: mp.Queue) -> None:
+    print("worker started")
+    while True:
+        task = request_queue.get()
+        if task is None:
+            break
+        result = process_number(task)
+        response_queue.put(result)
 
 
 @measure_time
 def use_multiprocessing_process(data: list[int]) -> None:
-    queue = mp.Queue()
+    response_queue = mp.Queue()
+    request_queue = mp.Queue()
     cpu_count = mp.cpu_count()
     max_processes = min(cpu_count, len(data))
-    chunk_size = len(data) // max_processes
     processes = []
 
-    for i in range(max_processes):
-        start = i * chunk_size
-        end = start + chunk_size if i < max_processes - 1 else len(data)
-        process = mp.Process(target=worker, args=(data[start:end], queue))
-        process.start()
+    for _ in range(max_processes):
+        process = mp.Process(target=worker, args=(request_queue, response_queue))
         processes.append(process)
 
-    finished_processes = 0
-    result = []
-    while (
-        finished_processes < max_processes
-    ):  # without manual check, main process is blocked at the join stage
-        item = queue.get()
-        if item is None:
-            finished_processes += 1
-        else:
-            result.extend(item)
+    for process in processes:
+        process.start()
+
+    for task in data:
+        request_queue.put(task)
+
+    for _ in range(max_processes):
+        request_queue.put(None)
+
+    results = []
+    for _ in range(len(data)):
+        result = response_queue.get()
+        results.append(result)
 
     for process in processes:
         process.join()
@@ -83,7 +89,7 @@ def use_multiprocessing_process(data: list[int]) -> None:
 
 def get_results(functions: list[callable]) -> dict[str, float]:
     data = generate_data(100000)
-    results = {func.__name__: func(data) for func in functions}
+    results = {func.__name__: func(data)[1] for func in functions}
     return results
 
 
