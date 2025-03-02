@@ -46,7 +46,6 @@ def use_multiprocessing_pool(data: list[int]) -> None:
         pool.map(process_number, data)
 
 
-@measure_time
 def worker(request_queue: mp.Queue, response_queue: mp.Queue) -> None:
     print("worker started")
     while True:

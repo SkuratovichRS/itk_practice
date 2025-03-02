@@ -1,25 +1,25 @@
 
     {
         "function":"use_sequential",
-        "time_seconds":10.174115,
+        "time_seconds":8.376483,
         "performance_vs_sequential":1.0
     }
 
     {
         "function":"use_concurrent_futures",
-        "time_seconds":11.841214,
-        "performance_vs_sequential":0.8592121551
+        "time_seconds":10.210718,
+        "performance_vs_sequential":0.8203618002
     }
 
     {
         "function":"use_multiprocessing_pool",
-        "time_seconds":3.951444,
-        "performance_vs_sequential":2.5747840536
+        "time_seconds":3.226456,
+        "performance_vs_sequential":2.5961869618
     }
 
     {
         "function":"use_multiprocessing_process",
-        "time_seconds":8.272336,
-        "performance_vs_sequential":1.229896247
+        "time_seconds":7.038687,
+        "performance_vs_sequential":1.1900632888
     }
 
