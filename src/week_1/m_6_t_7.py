@@ -17,4 +17,4 @@ def proxy_currency(environ, start_response):
     return [bytes(str(response_json), "utf-8")]
 
 
-# run: waitress-serve --listen=*:8000 src.m_6_t_7:proxy_currency
+# run: waitress-serve --listen=*:8000 src.week_1.m_6_t_7:proxy_currency

@@ -38,4 +38,4 @@ async def fetch_urls(
 
 
 if __name__ == "__main__":
-    asyncio.run(fetch_urls(urls, "src/m_3_t_10/results.jsonl"))
+    asyncio.run(fetch_urls(urls, "src/week_1/m_3_t_10/results.jsonl"))

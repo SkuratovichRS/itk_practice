@@ -114,4 +114,4 @@ def store_results(file_path: str) -> None:
 
 
 if __name__ == "__main__":
-    store_results("src/m_3_t_20/results.jsonl")
+    store_results("src/week_1/m_3_t_20/results.jsonl")
