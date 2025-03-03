@@ -6,57 +6,80 @@ import aiofiles
 import aiohttp
 
 
-async def write(output_path: str, data: dict[str, str | Any]) -> None:
-    async with aiofiles.open(output_path, "a") as f:
-        await f.write(json.dumps(data) + "\n")
+async def producer(queue: asyncio.Queue, input_path: str) -> None:
+    print("producer started")
+    async with aiofiles.open(input_path, "r") as f:
+        async for line in f:
+            url = line.strip()
+            await queue.put(url)
+            print(f"producer put {url}, {queue.qsize()=}")
+        for _ in range(queue.qsize()):
+            await queue.put(None)
+            print(f"producer put None, {queue.qsize()=}")
+        print("producer finished")
+
+
+async def consumer(
+    queue: asyncio.Queue,
+    session: aiohttp.ClientSession,
+    lock: asyncio.Lock,
+    timeout: int,
+    output_path: str,
+) -> None:
+    while True:
+        print(f"consumer started, {queue.qsize()=}")
+        url = await queue.get()
+        print(f"consumer get {url} {queue.qsize()=}")
+        if url is None:
+            break
+        data = await fetch(url, session, timeout)
+        if data is None:
+            continue
+        async with lock:
+            async with aiofiles.open(output_path, "a") as f:
+                await f.write(json.dumps(data) + "\n")
+    print("consumer finished")
 
 
 async def fetch(
     url: str,
-    output_path: str,
-    semaphore: asyncio.Semaphore,
     session: aiohttp.ClientSession,
-    lock: asyncio.Lock,
-    timeout: int = 1,
-) -> None:
-    async with semaphore:
-        try:
-            response = await session.get(url, timeout=timeout)
-        except (asyncio.TimeoutError, aiohttp.ClientConnectorError) as e:
-            print(f"Error {e} while fetching {url}")
-            return
-        if response.status != 200:
-            print(f"Non-200 status code from {url}, status: {response.status}")
-            return
-        if "application/json" not in response.headers.get("Content-Type", ""):
-            print(f"Non-JSON response from {url}")
-            return
-        try:
-            response_json = await response.json()
-        except aiohttp.ContentTypeError:
-            print(f"Error parsing JSON from {url}")
-            return
+    timeout: int,
+) -> dict[str, str | Any]:
+    print(f"fetching {url}")
+    try:
+        response = await session.get(url, timeout=timeout)
+    except (asyncio.TimeoutError, aiohttp.ClientConnectorError):
+        return
+    if response.status != 200:
+        return
+    if "application/json" not in response.headers.get("Content-Type", ""):
+        return
+    try:
+        response_json = await response.json()
+    except aiohttp.ContentTypeError:
+        return
 
     data = {"url": url, "content": response_json}
-    async with lock:
-        await write(output_path, data)
+    return data
 
 
 async def fetch_urls(
     input_path: str, output_path: str, concurrency: int = 5, timeout: int = 1
 ) -> None:
-    semaphore = asyncio.Semaphore(concurrency)
+    consumer_tasks = []
+    queue = asyncio.Queue(maxsize=concurrency)
     lock = asyncio.Lock()
-    tasks = []
+    producer_task = asyncio.create_task(producer(queue, input_path))
+
     async with aiohttp.ClientSession() as session:
-        async with aiofiles.open(input_path, "r") as f:
-            async for line in f:
-                url = line.strip()
-                task = asyncio.create_task(
-                    fetch(url, output_path, semaphore, session, lock, timeout)
-                )
-                tasks.append(task)
-            await asyncio.gather(*tasks)
+        for _ in range(concurrency):
+            consumer_task = asyncio.create_task(
+                consumer(queue, session, lock, timeout, output_path)
+            )
+            consumer_tasks.append(consumer_task)
+
+        await asyncio.gather(producer_task, *consumer_tasks)
 
 
 if __name__ == "__main__":
