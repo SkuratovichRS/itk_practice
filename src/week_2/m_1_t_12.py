@@ -38,7 +38,7 @@ def make_api_request(rate_limiter: RateLimiter):
 
 
 if __name__ == "__main__":
-    rate_limiter = RateLimiter()
+    rate_limiter = RateLimiter(redis.Redis("localhost", port=6379))
 
     for _ in range(50):
         time.sleep(random.randint(1, 2))
