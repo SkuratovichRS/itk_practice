@@ -9,6 +9,7 @@ dependencies = [
     "aiohttp>=3.11.13",
     "pandas>=2.2.3",
     "psycopg2-binary>=2.9.10",
+    "redlock-py>=1.0.8",
     "requests>=2.32.3",
     "ruff>=0.9.7",
     "sqlalchemy>=2.0.38",
