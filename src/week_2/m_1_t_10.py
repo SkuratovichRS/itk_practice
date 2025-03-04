@@ -7,7 +7,7 @@ from unittest import TestCase
 from redlock import Redlock
 
 print_lock = th.Lock()
-dlm = Redlock([{"host": "127.0.0.1", "port": 6379}])
+dlm = Redlock([{"host": "localhost", "port": 6379}])
 
 
 def single(max_processing_time: datetime.timedelta) -> callable:
