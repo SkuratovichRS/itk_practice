@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from app.views import ProtectedView, RegisterView
+from app.views import LogoutView, ProtectedView, RegisterView
 from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -26,4 +26,5 @@ urlpatterns = [
     path("login/", TokenObtainPairView.as_view(), name="login"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("protected/", ProtectedView.as_view(), name="protected"),
+    path("logout/", LogoutView.as_view(), name="logout"),
 ]
