@@ -1,9 +1,10 @@
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from app.serializers import UserSerializer
 
@@ -17,12 +18,11 @@ class RegisterView(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)
         response.data["message"] = "User created successfully"
         return response
-        
 
 
-class LogoutView(TokenRefreshView):
+class LogoutView(APIView):
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = TokenRefreshSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
