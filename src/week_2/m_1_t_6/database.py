@@ -1,11 +1,20 @@
+import os
 from datetime import datetime
 
+from dotenv import load_dotenv
 from sqlalchemy import DateTime, Integer, String, create_engine, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-engine = create_engine(
-    "postgresql://postgres:postgres@127.0.0.1:5432/m_1_t_6",
+load_dotenv()
+
+
+pg_dsn = (
+    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:"
+    f"{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
 )
+
+
+engine = create_engine(pg_dsn)
 
 DbSession = sessionmaker(bind=engine, expire_on_commit=False)
 
