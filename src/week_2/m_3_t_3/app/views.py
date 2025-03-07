@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
@@ -32,7 +33,10 @@ class BookViewSet(ModelViewSet):
 
 class BuyBookView(APIView):
     def post(self, request, pk):
-        book = get_object_or_404(Book, pk=pk, count__gt=0)
-        book.count -= 1
-        book.save()
+        with transaction.atomic():
+            book = get_object_or_404(
+                Book.objects.select_for_update(), pk=pk, count__gt=0
+            )
+            book.count -= 1
+            book.save()
         return Response({"message": "Book bought successfully"}, status=HTTP_200_OK)
